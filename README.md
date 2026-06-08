@@ -1,42 +1,20 @@
-# 🏏 IPL Data Analysis (2018–2019) Using SQL
+# 🏏 Men's IPL (2018–2019) Data Analysis using SQL
 
-## 📌 Project Overview
+An analytical deep dive into the 2018 and 2019 Indian Premier League (IPL) seasons. This project utilizes structured SQL queries to extract key performance indicators (KPIs) for batsmen and bowlers, evaluate team distributions, and track cross-season player consistency.
 
-This project analyzes player and team performance across the 2018 and 2019 Indian Premier League (IPL) seasons using SQL. By leveraging structured queries, I explored batting and bowling statistics, identified performance trends, and uncovered insights that can support data-driven decision-making in sports analytics.
+## 📊 Portfolio Presentation Deck
 
-The analysis focuses on extracting meaningful KPIs, evaluating player consistency across seasons, identifying statistical outliers, and translating raw data into actionable insights.
+To make this technical analysis accessible to executive stakeholders, I have synthesized my findings into an insight-led slide deck.
 
----
+*(Click the badge above to open the PDF slide deck directly in your browser via GitHub's native viewer!)*
 
-## 🎯 Objectives
+# 🚀 Key Insights & SQL Implementations
 
-* Analyze batting and bowling performances using SQL.
-* Identify high-performing players based on multiple metrics.
-* Compare player consistency across seasons.
-* Detect statistical biases caused by small sample sizes.
-* Generate business-style insights from sports datasets.
+## 1. The Volume Trap & Outlier Bias (Bowler Workloads)
 
----
+**Analytical Goal:** Expose how lookups on raw averages can deceive decision-makers if workload volumes are ignored.
 
-## 🛠️ Technologies Used
-
-* SQL (Google BigQuery)
-* Data Analysis
-* Aggregations & Filtering
-* Joins
-* Sports Analytics
-
----
-
-# 📊 Key Insights & SQL Analysis
-
-## 1️⃣ The Volume Trap: Why Context Matters
-
-### Analytical Goal
-
-Identify bowlers who conceded the fewest runs during the 2018 season.
-
-### SQL Query
+### Initial Query: Identifying bowlers with the absolute lowest runs conceded in 2018
 
 ```sql
 SELECT Player, Runs
@@ -45,17 +23,15 @@ ORDER BY Runs
 LIMIT 3;
 ```
 
-### Result
+### Query Output
 
-| Player       | Runs Conceded |
-| ------------ | ------------- |
-| Pathan, Y K  | 14            |
-| Short, D J M | 19            |
-| Rana, N      | 44            |
+| Row | Player       | Runs Conceded |
+| --- | ------------ | ------------- |
+| 1   | Pathan, Y K  | 14            |
+| 2   | Short, D J M | 19            |
+| 3   | Rana, N      | 44            |
 
-At first glance, these players appear to be the most economical bowlers.
-
-### Validation Query
+### The Analytical Catch (Exposed via Workload Query)
 
 ```sql
 SELECT Player, Overs
@@ -64,31 +40,23 @@ ORDER BY Overs ASC
 LIMIT 5;
 ```
 
-### Insight
+### Workload Output
 
-The analysis revealed that these bowlers had delivered very few overs:
+| Row | Player       | Overs Bowled | Runs Conceded |
+| --- | ------------ | ------------ | ------------- |
+| 1   | Pathan, Y K  | 2.0          | 14            |
+| 2   | Short, D J M | 3.0          | 19            |
+| 3   | Rana, N      | 6.1          | 44            |
 
-| Player       | Overs Bowled |
-| ------------ | ------------ |
-| Pathan, Y K  | 2.0          |
-| Short, D J M | 3.0          |
-| Rana, N      | 6.1          |
-
-### Key Finding
-
-Low run totals alone can be misleading. Bowlers with extremely small workloads may appear highly effective despite limited participation.
-
-**Recommendation:** Apply workload thresholds (e.g., Overs ≥ 10) before evaluating bowling efficiency.
+💡 **Deduction:** On paper, Yusuf Pathan and D'Arcy Short look like defensive masterminds. In reality, they bowled just 12 and 18 deliveries respectively. Evaluating bowlers using run suppression metrics without applying a threshold constraint (such as `Overs ≥ 10.0`) introduces heavy statistical bias.
 
 ---
 
-## 2️⃣ Identifying Elite Defensive Bowlers
+## 2. High-Yield Bowler Identification (Strategic Defending)
 
-### Analytical Goal
+**Analytical Goal:** Isolate premium, defensive anchor bowlers who maintain an exceptional economy rate while delivering consistent wickets.
 
-Find bowlers who combined wicket-taking ability with exceptional economy rates.
-
-### SQL Query
+### Filtering for bowlers with an Economy Rate (E_R) under 7.00 runs per over, sorted by wickets
 
 ```sql
 SELECT Player, Wkts, E_R
@@ -97,121 +65,100 @@ WHERE E_R < 7
 ORDER BY Wkts DESC;
 ```
 
-### Result
+### Query Output
 
-| Player           | Wickets | Economy Rate |
-| ---------------- | ------- | ------------ |
-| Rashid Khan      | 21      | 6.74         |
-| Bumrah, J J      | 17      | 6.89         |
-| Mujeeb Ur Rahman | 14      | 6.99         |
-| Ngidi, L         | 11      | 6.00         |
+| Row | Player           | Wickets | Economy Rate (E_R) |
+| --- | ---------------- | ------- | ------------------ |
+| 1   | Rashid Khan      | 21      | 6.74               |
+| 2   | Bumrah, J J      | 17      | 6.89               |
+| 3   | Mujeeb Ur Rahman | 14      | 6.99               |
+| 4   | Ngidi, L         | 11      | 6.00               |
 
-### Key Finding
-
-Rashid Khan and Jasprit Bumrah emerged as the most effective defensive bowlers, maintaining elite economy rates while consistently taking wickets.
+💡 **Deduction:** Rashid Khan and Jasprit Bumrah emerge as the premier defensive assets of the 2018 season—delivering high wicket volumes (21 and 17) while successfully suffocating run production under the elite 7.00 runs-per-over ceiling.
 
 ---
 
-## 3️⃣ Cross-Season Consistency Analysis
+## 3. Multi-Season Stability (The Core Roster Anchor)
 
-### Analytical Goal
+**Analytical Goal:** Run a relational mapping across separate seasonal database tables to find the single most consistent scoring anchor.
 
-Determine the most consistent run-scorer across both IPL seasons.
-
-### SQL Query
+### Executing an INNER JOIN to aggregate runs across 2018 and 2019
 
 ```sql
 SELECT
-    a.Player,
-    (SUM(a.Runs) + SUM(b.Runs)) AS CombinedRuns
+  a.Player,
+  (SUM(a.Runs) + SUM(b.Runs)) AS CombinedRuns
 FROM `men_IPL.2018_Batsmen` AS a
 INNER JOIN `men_IPL.2019_Batsmen` AS b
-ON a.Player = b.Player
+  ON a.Player = b.Player
 GROUP BY a.Player
 ORDER BY CombinedRuns DESC
 LIMIT 1;
 ```
 
-### Result
+### Query Output
 
-| Player     | Combined Runs |
-| ---------- | ------------- |
-| Rahul, K L | 1252          |
+| Row | Player     | Combined Runs (2018–2019) |
+| --- | ---------- | ------------------------- |
+| 1   | Rahul, K L | 1252                      |
 
-### Key Finding
-
-K. L. Rahul was the most consistent batter across the two seasons, accumulating 1,252 runs and demonstrating sustained top-order performance.
+💡 **Deduction:** K L Rahul represents the peak of batting longevity and stability over this 24-month period, contributing a massive 1,252 runs as a reliable top-order foundation.
 
 ---
 
-## 4️⃣ Team Roster Density Analysis
+## 4. Roster Density Analysis
 
-### Analytical Goal
+**Analytical Goal:** Query team concentrations to identify active player squad density patterns in the 2019 batsmen dataset.
 
-Analyze player distribution across IPL franchises in 2019.
-
-### SQL Query
+### Counting active batsmen registered across different franchise cohorts
 
 ```sql
-SELECT Team,
-       COUNT(Player) AS TotalCount
+SELECT Team, COUNT(Player) AS TotalCount
 FROM `men_IPL.2019_Batsmen`
 GROUP BY Team;
 ```
 
-### Result
+### Query Output
 
-| Team                        | Registered Batsmen |
-| --------------------------- | ------------------ |
-| Chennai Super Kings         | 7                  |
-| Kings XI Punjab             | 7                  |
-| Rajasthan Royals            | 7                  |
-| Royal Challengers Bangalore | 6                  |
-| Mumbai Indians              | 6                  |
-| Sunrisers Hyderabad         | 6                  |
-| Kolkata Knight Riders       | 6                  |
-| Delhi Capitals              | 5                  |
-
-### Key Finding
-
-Most franchises maintained similar squad distributions, while Delhi Capitals had the smallest representation within the dataset.
+| Row | Team                        | Registered Batsmen |
+| --- | --------------------------- | ------------------ |
+| 1   | Chennai Super Kings         | 7                  |
+| 2   | Kings XI Punjab             | 7                  |
+| 3   | Rajasthan Royals            | 7                  |
+| 4   | Royal Challengers Bangalore | 6                  |
+| 5   | Mumbai Indians              | 6                  |
+| 6   | Sunrisers Hyderabad         | 6                  |
+| 7   | Kolkata Knight Riders       | 6                  |
+| 8   | Delhi Capitals              | 5                  |
 
 ---
 
-# 💡 Skills Demonstrated
+# 🛠️ Skills Demonstrated
 
-### SQL & Data Analysis
+### Relational Query Operations
 
-* Complex filtering using WHERE clauses
-* Aggregations with COUNT(), SUM(), and GROUP BY
-* Sorting and ranking using ORDER BY and LIMIT
-* Relational analysis using INNER JOIN
+INNER JOIN logic to merge historical datasets side-by-side.
 
-### Analytical Thinking
+### Data Aggregation & Filtering
 
-* Identifying misleading statistical patterns
-* Detecting outliers and sample-size bias
-* Converting data into business insights
+Advanced utilization of GROUP BY, ORDER BY, LIMIT, and multi-conditional WHERE clauses.
 
-### Data Storytelling
+### Data Integrity Checks
 
-* Translating SQL outputs into actionable recommendations
-* Presenting technical findings in a stakeholder-friendly format
+Identifying and resolving structural bias and statistical noise (e.g., small sample sizes distorting averages).
+
+### Strategic Translation
+
+Converting raw system outputs into operational recommendations for sports managers.
 
 ---
 
-## 🚀 Key Takeaway
+# 📬 Contact & Connections
 
-This project demonstrates how SQL can be used not only to retrieve data but also to uncover meaningful patterns, validate assumptions, and support strategic decision-making through sports analytics.
+**Name:** Aditi Paitandy
 
----
+**LinkedIn:** Aditi Paitandy on LinkedIn
 
-## 📬 Connect With Me
+**Email:** [aditipaitandy2003@gmail.com](mailto:aditipaitandy2003@gmail.com)
 
-**Aditi Paitandy**
-
-* LinkedIn: [www.linkedin.com/in/aditi-paitandy](http://www.linkedin.com/in/aditi-paitandy)
-* Email: [aditipaitandy2003@gmail.com](mailto:aditipaitandy2003@gmail.com)
-* GitHub: github.com/aditipaitandy
-
-If you found this project interesting, feel free to ⭐ the repository and connect with me.
+**GitHub Repository:** IPL-SQL-Data-Analysis
