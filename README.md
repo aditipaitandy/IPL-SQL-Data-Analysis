@@ -87,31 +87,6 @@ Converting raw SQL outputs into operational recommendations for sports managemen
 
 ---
 
-# 💼 Recruiter Quick-Start Kit
-
-If you are a recruiter looking to share or review this work, feel free to use the following:
-
-## Recruiter-Focused Summary
-
-> "Data is meaningless without a business context. I don't just query databases; I extract strategic answers. This project showcases my ability to clean disparate IPL datasets, join multi-year tables in BigQuery, and translate performance metrics into executive-ready insights."
-
----
-
-## LinkedIn Caption
-
-**How do you build a championship-winning IPL franchise? 🏏📊**
-
-Most sports franchises make the mistake of overpaying for peak single-season performers. Using Google BigQuery, I analyzed player statistics across the 2018–2019 IPL seasons to uncover the hidden signals of multi-year consistency.
-
-Check out my full case study below!
-
-👉 Portfolio: https://github.com/aditipaitandy
-
-👉 Connect with me: https://www.linkedin.com/in/aditi-paitandy-750629317
-
-#DataAnalytics #SQL #BigQuery #SportsAnalytics #BusinessIntelligence #DataStorytelling #IPLAnalytics #DataAnalystJobs
-
----
 
 # 📬 Contact
 
