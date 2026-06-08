@@ -5,6 +5,7 @@ An analytical deep dive into the 2018 and 2019 Indian Premier League (IPL) seaso
 ## 📊 Portfolio Presentation Deck
 
 To make this technical analysis accessible to executive stakeholders, I have synthesized my findings into an insight-led slide deck.
+[![View Portfolio Deck](https://img.shields.io/badge/View_Portfolio_Deck-PDF-FFB800?style=for-the-badge&logo=adobeacrobatreader&logoColor=black)](IPL_2018_2019_Analysis_Presentation.pdf)
 
 *(Click the badge above to open the PDF slide deck directly in your browser via GitHub's native viewer!)*
 
